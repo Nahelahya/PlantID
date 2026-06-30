@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Plant {
+  id             Int             @id @default(autoincrement())
+  name           String
+  scientificName String
+  genus          String
+  family         String
+  kingdom        String          @default("Plantae")
+  description    String?
+  imageUrl       String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  careGuide      CareGuide?
+  distributions  Distribution[]
+  diseases       Disease[]
+}
+
+model CareGuide {
+  id           Int    @id @default(autoincrement())
+  plantId      Int    @unique
+  watering     String
+  sunlight     String
+  temperature  String
+  soil         String
+  fertilizer   String
+  humidity     String?
+  toxicity     String?
+  pruning      String?
+  repotting    String?
+  difficulty   String?
+
+  plant        Plant  @relation(fields: [plantId], references: [id], onDelete: Cascade)
+}
+
+model Distribution {
+  id        Int    @id @default(autoincrement())
+  plantId   Int
+  region    String
+  country   String
+  latitude  Float
+  longitude Float
+  type      String @default("native")
+
+  plant     Plant  @relation(fields: [plantId], references: [id], onDelete: Cascade)
+}
+
+model Disease {
+  id              Int     @id @default(autoincrement())
+  plantId         Int
+  name            String
+  scientificName  String?
+  symptoms        String
+  cause           String?
+  treatment       String
+  prevention      String?
+
+  plant           Plant   @relation(fields: [plantId], references: [id], onDelete: Cascade)
+}
